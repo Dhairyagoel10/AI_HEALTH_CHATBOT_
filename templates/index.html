@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health & Disease Chatbot</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Health & Disease Chatbot</h1>
+        <div class="chat-box" id="chat-box">
+            <div id="messages"></div>
+        </div>
+        <input id="user-input" type="text" placeholder="Ask me anything about health...">
+        <button id="send-btn">Send</button>
+    </div>
+
+    <script>
+        document.querySelector("#send-btn").addEventListener("click", function() {
+            sendMessage();
+        });
+
+        document.querySelector("#user-input").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            let userText = document.querySelector("#user-input").value;
+            if (userText === "") return;
+
+            let userMessage = `<div class="user-message">You: ${userText}</div>`;
+            document.querySelector("#messages").innerHTML += userMessage;
+
+            fetch(`/get?msg=${userText}`)
+                .then(response => response.text())
+                .then(data => {
+                    let botMessage = `<div class="bot-message">Bot: ${data}</div>`;
+                    document.querySelector("#messages").innerHTML += botMessage;
+                    document.querySelector("#user-input").value = "";
+                    document.querySelector("#chat-box").scrollTop = document.querySelector("#chat-box").scrollHeight;
+                });
+        }
+    </script>
+</body>
+</html>
